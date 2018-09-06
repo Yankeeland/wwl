@@ -10,13 +10,13 @@
 
 #load modules
 from openpyxl import *
-import sys
+import sys, os, xml.etree.ElementTree as et
 
 DEBUG = True
 
 if len(sys.argv) != 2:
     print("Error: please follow usage Rules")
-    print("USAGE: randomemployee.py <filename>")
+    print("USAGE: jabberEmployeeList.py <filename>")
     sys.exit()
 
 FILENAME = sys.argv[1]
@@ -31,6 +31,21 @@ except:
 sheet = wb.active
 rows = sheet.max_row
 
+#create the XML Element
+root = et.Element("buddylist")
+
+for x in range(1,rows):
+    row = tuple(sheet.rows)[x]
+    group = et.SubElement(root, "group")
+    et.SubElement(group, "gname").text = "WWL"
+    user = et.SubElement(group, "user")
+    et.SubElement(user, "uname").text = row[1].value
+    et.SubElement(user, "fname").text = row[0].value
+#    print(row[0].value, row[1].value)
 
 
-#for each line in the input sheet, create and XML entry
+#write the XML file
+
+tree = et.ElementTree(root)
+tree.write('jabberEmployeeList.xml', encoding='utf-8', xml_declaration=True)
+
